@@ -29,6 +29,9 @@ public class CrawlerManager {
 		crawl(startUrl, baseDir, 1, maxDepth);
 	}
 	private void crawl(String url, String baseDir, int depth, int maxDepth) {
+		if (urlToLocalPath.containsKey(url)) {
+			return;
+		}
 		if (depth > maxDepth) return;
 		try {
 			String path = fileManager.saveHtml();
