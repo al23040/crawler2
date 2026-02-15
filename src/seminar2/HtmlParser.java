@@ -1,7 +1,9 @@
 package seminar2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -78,5 +80,21 @@ public class HtmlParser {
 			script.attr("src", htmlPath);
 		}
 		return;
+	}
+	public void rewriteLinks(Elements links, Map<String, String> urlToLocalPath) {
+		for (Element link : links) {
+			String originalUrl = link.absUrl("href");
+            
+            // もしマップに登録されているURLなら（＝ダウンロード済みなら）
+            if (urlToLocalPath.containsKey(originalUrl)) {
+                String localPath = urlToLocalPath.get(originalUrl);
+                // "html/1.html" からファイル名 "1.html" だけを取り出してリンク先に設定
+                File file = new File(localPath);
+                link.attr("href", file.getName());
+            } else {
+                // ダウンロードされなかったリンク（外部サイトや深さ制限外）
+                // 必要に応じて "#" にするなど
+            }
+		}
 	}
 }

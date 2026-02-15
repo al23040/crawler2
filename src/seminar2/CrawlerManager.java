@@ -2,7 +2,9 @@ package seminar2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +17,9 @@ public class CrawlerManager {
 	private HtmlParser htmlParser;
 	private Downloader downloader;
 	private FileManager fileManager;
+	
+	private Map<String, String> urlToLocalPath = new HashMap<>();
+	
 	public CrawlerManager(String baseDir) {
 		this.fileManager = new FileManager(baseDir);
 		this.htmlParser = new HtmlParser(fileManager);
@@ -22,11 +27,11 @@ public class CrawlerManager {
 	}
 	public void start(String startUrl, String baseDir, int maxDepth) {
 		crawl(startUrl, baseDir, 1, maxDepth);
-		return;
 	}
 	private void crawl(String url, String baseDir, int depth, int maxDepth) {
 		if (depth > maxDepth) return;
 		try {
+			String path = fileManager.saveHtml();
 			Document doc = Jsoup.connect(url).get();
 			
 			List<Elements> resourceUrls = htmlParser.makeLinks(doc);
@@ -36,12 +41,11 @@ public class CrawlerManager {
 				String nextUrl = link.absUrl("href");
 				crawl(nextUrl, baseDir, depth+1, maxDepth);
 			}
-			
+			htmlParser.rewriteLinks(links, urlToLocalPath);
 			htmlParser.rewriteToLocalPaths(resourceUrls);
-			String path = fileManager.saveHtml();
 			downloader.downloadHtml(path, doc);
 		} catch(IOException e) {
-			e.printStackTrace();
+			e.printStackTrace();	
 		}
 		return;
 	}
