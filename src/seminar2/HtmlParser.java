@@ -38,7 +38,7 @@ public class HtmlParser {
 		return scripts;
 	}
 	private Elements makeNextUrls(Document doc) {
-		Elements links = doc.select("abs:href");
+		Elements links = doc.select("a[href]");
 		return links;
 	}
 	
@@ -65,7 +65,7 @@ public class HtmlParser {
 			String cssUrl = css.attr("abs:href");
 			String path = fileManager.saveCss();
 			downloader.downloadFile(cssUrl, path);
-			String htmlPath = fileManager.baseDir + path;
+			String htmlPath =path;
 			css.attr("href", htmlPath);
 		}
 		return;
@@ -76,7 +76,7 @@ public class HtmlParser {
 			String jsUrl = script.attr("abs:src");
 			String path = fileManager.saveJs();
 			downloader.downloadFile(jsUrl, path);
-			String htmlPath = fileManager.baseDir + path;
+			String htmlPath = path;
 			script.attr("src", htmlPath);
 		}
 		return;

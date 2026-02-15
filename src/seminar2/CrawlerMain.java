@@ -9,7 +9,6 @@ public class CrawlerMain {
 		System.out.print("1:Wiki, 2:Rakuten ->");
 		int num = scanner.nextInt();
 		
-		scanner.close();
 		
 		String url;
 		String baseDir;
@@ -22,6 +21,7 @@ public class CrawlerMain {
 			baseDir = "rakuten/";
 		}
 		else {
+			scanner.close();
 			return;
 		}
 		
