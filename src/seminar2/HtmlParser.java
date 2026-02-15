@@ -1,6 +1,5 @@
 package seminar2;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +57,7 @@ public class HtmlParser {
 			String path = fileManager.saveImage();
 			String htmlPath = downloader.downloadImage(imgUrl, path);
 			img.attr("src", htmlPath);
+			img.removeAttr("srcset");
 		}
 		return;
 	}
@@ -88,8 +88,7 @@ public class HtmlParser {
             if (urlToLocalPath.containsKey(originalUrl)) {
                 String localPath = urlToLocalPath.get(originalUrl);
                 // "html/1.html" からファイル名 "1.html" だけを取り出してリンク先に設定
-                File file = new File(localPath);
-                link.attr("href", file.getName());
+                link.attr("href", localPath);
             } else {
                 // ダウンロードされなかったリンク（外部サイトや深さ制限外）
                 // 必要に応じて "#" にするなど

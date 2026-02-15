@@ -14,6 +14,7 @@ import org.jsoup.select.Elements;
 
 public class CrawlerManager {
 	List<List<Elements>> elementsList = new ArrayList<>();
+	String baseDir;
 	private HtmlParser htmlParser;
 	private Downloader downloader;
 	private FileManager fileManager;
@@ -21,6 +22,7 @@ public class CrawlerManager {
 	private Map<String, String> urlToLocalPath = new HashMap<>();
 	
 	public CrawlerManager(String baseDir) {
+		this.baseDir = baseDir;
 		this.fileManager = new FileManager(baseDir);
 		this.downloader = new Downloader(baseDir);
 		this.htmlParser = new HtmlParser(fileManager, downloader);		
@@ -47,7 +49,7 @@ public class CrawlerManager {
 			}
 			htmlParser.rewriteLinks(links, urlToLocalPath);
 			htmlParser.rewriteToLocalPaths(resourceUrls);
-			downloader.downloadHtml(path, doc);
+			downloader.downloadHtml(baseDir + path, doc);
 		} catch(IOException e) {
 			e.printStackTrace();	
 		}

@@ -50,9 +50,11 @@ public class Downloader {
             }
             
             System.out.println(filePath + "をダウンロードしました．");
+            
             out.close();
             in.close();
             connection.disconnect();
+            
             return htmlPath;
 		} catch (IOException e) {
         	e.printStackTrace();

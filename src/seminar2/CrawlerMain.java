@@ -20,6 +20,10 @@ public class CrawlerMain {
 			url = "https://www.rakuten.co.jp/";
 			baseDir = "rakuten/";
 		}
+		else if (num == 3) {
+			url = "http://books.toscrape.com/";
+			baseDir = "books/";
+		}
 		else {
 			scanner.close();
 			return;

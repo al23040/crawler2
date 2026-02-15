@@ -14,7 +14,6 @@ public class FileManager {
 		new File(baseDir + "images").mkdirs();
 		new File(baseDir + "css").mkdirs();
 		new File(baseDir + "js").mkdirs();
-		new File(baseDir + "html").mkdirs();
 	}
 	public String saveImage() {
 		String path = "images/" + imgCount;
@@ -32,7 +31,7 @@ public class FileManager {
 		return path;
 	}
 	public String saveHtml() {
-		String path = baseDir + htmlCount + ".html";
+		String path = htmlCount + ".html";
 		htmlCount++;
 		return path;
 	}
