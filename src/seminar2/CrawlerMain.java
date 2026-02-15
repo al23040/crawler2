@@ -27,9 +27,9 @@ public class CrawlerMain {
 		
 		System.out.print("Depth->");
 		int maxDepth = scanner.nextInt();
+		scanner.close();
 		
 		CrawlerManager crawlerManager = new CrawlerManager(baseDir);
 		crawlerManager.start(url, baseDir, maxDepth);
-		
 	}
 }
