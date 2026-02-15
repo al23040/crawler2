@@ -22,8 +22,8 @@ public class CrawlerManager {
 	
 	public CrawlerManager(String baseDir) {
 		this.fileManager = new FileManager(baseDir);
-		this.htmlParser = new HtmlParser(fileManager);
-		this.downloader = new Downloader();
+		this.downloader = new Downloader(baseDir);
+		this.htmlParser = new HtmlParser(fileManager, downloader);		
 	}
 	public void start(String startUrl, String baseDir, int maxDepth) {
 		crawl(startUrl, baseDir, 1, maxDepth);

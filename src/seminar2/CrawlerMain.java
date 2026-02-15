@@ -31,5 +31,6 @@ public class CrawlerMain {
 		
 		CrawlerManager crawlerManager = new CrawlerManager(baseDir);
 		crawlerManager.start(url, baseDir, maxDepth);
+		System.out.println("終了");
 	}
 }

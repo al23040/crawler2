@@ -14,6 +14,10 @@ import java.nio.file.StandardCopyOption;
 import org.jsoup.nodes.Document;
 
 public class Downloader {
+	String baseDir;
+	public Downloader(String baseDir) {
+		this.baseDir = baseDir;
+	}
 	public String downloadImage(String urlStr, String path) {
 		HttpURLConnection connection = null;
 		InputStream in = null;
@@ -22,6 +26,7 @@ public class Downloader {
 		try {
 			URL url = new URL(urlStr);
 			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 			connection.setRequestMethod("GET");
 			connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
@@ -32,10 +37,11 @@ public class Downloader {
                 return null;
             }
             
-            String filePath = path + getExtension(contentType); 
+            String filePath = baseDir + path + getExtension(contentType);
+            String htmlPath = path + getExtension(contentType);
             
             in = new BufferedInputStream(connection.getInputStream());
-            out = new FileOutputStream(path);
+            out = new FileOutputStream(filePath);
             
             byte[] buffer = new byte[1024];
             int bytesRead;
@@ -47,7 +53,7 @@ public class Downloader {
             out.close();
             in.close();
             connection.disconnect();
-            return filePath;
+            return htmlPath;
 		} catch (IOException e) {
         	e.printStackTrace();
         	return null;
@@ -68,7 +74,11 @@ public class Downloader {
         }
 	}
 	public void downloadHtml(String path, Document doc) {
-		Files.write(Paths.get(path), doc.outerHtml().getBytes());
+		try {
+			Files.write(Paths.get(path), doc.outerHtml().getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	public String getExtension(String contentType) {
 		if (contentType == null) return ".jpg";

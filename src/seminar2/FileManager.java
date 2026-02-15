@@ -17,22 +17,22 @@ public class FileManager {
 		new File(baseDir + "html").mkdirs();
 	}
 	public String saveImage() {
-		String path = baseDir + "img_" + imgCount;
+		String path = "images/" + imgCount;
 		imgCount++;
 		return path;
 	}
 	public String saveCss() {
-		String path = baseDir + "css/" + cssCount + "_style.css";
+		String path = "css/" + cssCount + "_style.css";
 		cssCount++;
 		return path;
 	}
 	public String saveJs() {
-		String path = baseDir + "js/" + jsCount + ".js";
+		String path = "js/" + jsCount + ".js";
 		jsCount++;
 		return path;
 	}
 	public String saveHtml() {
-		String path = baseDir + "html/" + htmlCount + ".html";
+		String path = baseDir + htmlCount + ".html";
 		htmlCount++;
 		return path;
 	}

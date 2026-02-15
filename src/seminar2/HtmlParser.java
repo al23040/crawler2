@@ -12,8 +12,9 @@ import org.jsoup.select.Elements;
 public class HtmlParser {
 	private FileManager fileManager;
 	private Downloader downloader;
-	public HtmlParser(FileManager fileManager) {
-		this.downloader = new Downloader();
+	String baseDir = "wiki/";
+	public HtmlParser(FileManager fileManager, Downloader downloader) {
+		this.downloader = downloader;
 		this.fileManager = fileManager;
 	}
 	
@@ -64,9 +65,8 @@ public class HtmlParser {
 		for (Element css : cssFiles) {
 			String cssUrl = css.attr("abs:href");
 			String path = fileManager.saveCss();
-			downloader.downloadFile(cssUrl, path);
-			String htmlPath =path;
-			css.attr("href", htmlPath);
+			downloader.downloadFile(cssUrl, fileManager.baseDir + path);
+			css.attr("href", path);
 		}
 		return;
 	}
@@ -75,9 +75,8 @@ public class HtmlParser {
 		for (Element script : scripts) {
 			String jsUrl = script.attr("abs:src");
 			String path = fileManager.saveJs();
-			downloader.downloadFile(jsUrl, path);
-			String htmlPath = path;
-			script.attr("src", htmlPath);
+			downloader.downloadFile(jsUrl, fileManager.baseDir + path);
+			script.attr("src", path);
 		}
 		return;
 	}
