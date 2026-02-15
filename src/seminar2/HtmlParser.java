@@ -8,9 +8,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class HtmlParser {
+	private FileManager fileManager;
 	private Downloader downloader;
-	public HtmlParser() {
+	public HtmlParser(FileManager fileManager) {
 		this.downloader = new Downloader();
+		this.fileManager = fileManager;
 	}
 	
 	public List<Elements> makeLinks(Document doc) {
@@ -38,49 +40,43 @@ public class HtmlParser {
 		return links;
 	}
 	
-	public void rewriteToLocalPaths(List<List<Elements>> elementsList, String baseDir) {
-		int i = 0, j = 0, k = 0;
-		for (List<Elements> resourceUrls : elementsList) {
-			Elements images = resourceUrls.get(0);
-			resourceUrls.set(0, rewriteImagePaths(images, baseDir, i));
-			Elements cssFiles = resourceUrls.get(1);
-			resourceUrls.set(1, rewriteCssFilesPaths(cssFiles, baseDir, j));
-			Elements scripts = resourceUrls.get(2);
-			resourceUrls.set(2, rewriteScriptsPaths(scripts, baseDir, k));
-		}
+	public void rewriteToLocalPaths(List<Elements> resourceUrls) {
+		Elements images = resourceUrls.get(0);
+		rewriteImagePaths(images);
+		Elements cssFiles = resourceUrls.get(1);
+		rewriteCssFilesPaths(cssFiles);
+		Elements jsFiles = resourceUrls.get(2);
+		rewriteScriptsPaths(jsFiles);
 		
 	}
-	private Elements rewriteImagePaths(Elements images, String baseDir, int i) {
+	private void rewriteImagePaths(Elements images) {
 		for (Element img : images) {
 			String imgUrl = img.absUrl("src");
-			if (imgUrl.isEmpty()) continue;
-			downloader.downloadImage(imgUrl, i);
-			//ファイル保存先の書き換え
+			String path = fileManager.saveImage();
+			String htmlPath = downloader.downloadImage(imgUrl, path);
+			img.attr("src", htmlPath);
 		}
-		return images;
+		return;
 	}
-	private Elements rewriteCssFilesPaths(Elements cssFiles, String baseDir, int j) {
+	private void rewriteCssFilesPaths(Elements cssFiles) {
 		for (Element css : cssFiles) {
 			String cssUrl = css.attr("abs:href");
-			String path = baseDir + "css/" + j + "_style.css";
-			String htmlPath = "css/" + j + "_sytle.css";
-			
+			String path = fileManager.saveCss();
 			downloader.downloadFile(cssUrl, path);
+			String htmlPath = fileManager.baseDir + path;
 			css.attr("href", htmlPath);
-			j++;
 		}
-		return cssFiles;
+		return;
 	}
-	private Elements rewriteScriptsPaths(Elements scripts, String baseDir, int k) {
+	//jsに時間があったら統一!!
+	private void rewriteScriptsPaths(Elements scripts) {
 		for (Element script : scripts) {
-			String jsUrl = script.attr("abs:sec");
-			String path = baseDir + "js/" + k + ".js";
-			String htmlPath = "js/" + k + ".js";
-			
-			downloader.downloadFile(jsUrl, htmlPath);
+			String jsUrl = script.attr("abs:src");
+			String path = fileManager.saveJs();
+			downloader.downloadFile(jsUrl, path);
+			String htmlPath = fileManager.baseDir + path;
 			script.attr("src", htmlPath);
-			k++;
 		}
-		return scripts;
+		return;
 	}
 }

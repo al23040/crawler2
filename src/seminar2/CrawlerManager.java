@@ -14,28 +14,32 @@ public class CrawlerManager {
 	List<List<Elements>> elementsList = new ArrayList<>();
 	private HtmlParser htmlParser;
 	private Downloader downloader;
-	public CrawlerManager() {
-		this.htmlParser = new HtmlParser();
+	private FileManager fileManager;
+	public CrawlerManager(String baseDir) {
+		this.fileManager = new FileManager(baseDir);
+		this.htmlParser = new HtmlParser(fileManager);
 		this.downloader = new Downloader();
 	}
 	public void start(String startUrl, String baseDir, int maxDepth) {
 		crawl(startUrl, baseDir, 1, maxDepth);
-		htmlParser.rewriteToLocalPaths(null, baseDir);
+		return;
 	}
 	private void crawl(String url, String baseDir, int depth, int maxDepth) {
-		if (depth > maxDepth) {
-			return;
-		}
+		if (depth > maxDepth) return;
 		try {
 			Document doc = Jsoup.connect(url).get();
 			
-			elementsList.add(htmlParser.makeLinks(doc));
-			List<Elements> resourceUrls = elementsList.get(depth-1);
+			List<Elements> resourceUrls = htmlParser.makeLinks(doc);
+			
 			Elements links = resourceUrls.get(3);
 			for (Element link : links) {
 				String nextUrl = link.absUrl("href");
 				crawl(nextUrl, baseDir, depth+1, maxDepth);
 			}
+			
+			htmlParser.rewriteToLocalPaths(resourceUrls);
+			String path = fileManager.saveHtml();
+			downloader.downloadHtml(path, doc);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}

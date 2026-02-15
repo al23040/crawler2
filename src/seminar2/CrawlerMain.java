@@ -1,6 +1,5 @@
 package seminar2;
 
-import java.io.File;
 import java.util.Scanner;
 
 public class CrawlerMain {
@@ -25,14 +24,11 @@ public class CrawlerMain {
 		else {
 			return;
 		}
-		new File(baseDir + "images").mkdirs();
-		new File(baseDir + "css").mkdirs();
-		new File(baseDir + "js").mkdirs();
 		
 		System.out.print("Depth->");
 		int maxDepth = scanner.nextInt();
 		
-		CrawlerManager crawlerManager = new CrawlerManager();
+		CrawlerManager crawlerManager = new CrawlerManager(baseDir);
 		crawlerManager.start(url, baseDir, maxDepth);
 		
 	}
