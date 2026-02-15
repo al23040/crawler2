@@ -32,6 +32,7 @@ public class CrawlerManager {
 		if (depth > maxDepth) return;
 		try {
 			String path = fileManager.saveHtml();
+			urlToLocalPath.put(url, path);
 			Document doc = Jsoup.connect(url).get();
 			
 			List<Elements> resourceUrls = htmlParser.makeLinks(doc);
