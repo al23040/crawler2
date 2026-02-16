@@ -27,14 +27,18 @@ public class CrawlerManager {
 		this.downloader = new Downloader(baseDir);
 		this.htmlParser = new HtmlParser(fileManager, downloader);		
 	}
+	
 	public void start(String startUrl, String baseDir, int maxDepth) {
 		crawl(startUrl, baseDir, 1, maxDepth);
 	}
+	
 	private void crawl(String url, String baseDir, int depth, int maxDepth) {
 		if (urlToLocalPath.containsKey(url)) {
 			return;
 		}
+		
 		if (depth > maxDepth) return;
+		
 		try {
 			String path = fileManager.saveHtml();
 			urlToLocalPath.put(url, path);
@@ -47,9 +51,11 @@ public class CrawlerManager {
 				String nextUrl = link.absUrl("href");
 				crawl(nextUrl, baseDir, depth+1, maxDepth);
 			}
+			
 			htmlParser.rewriteLinks(links, urlToLocalPath);
 			htmlParser.rewriteToLocalPaths(resourceUrls);
 			downloader.downloadHtml(baseDir + path, doc);
+			
 		} catch(IOException e) {
 			e.printStackTrace();	
 		}
