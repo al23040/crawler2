@@ -16,6 +16,7 @@ public class CrawlerManager {
 	private HtmlParser htmlParser;
 	private Downloader downloader;
 	private FileManager fileManager;
+	private PathRegistry pathRegistry;
 	
 	private Map<String, String> urlToLocalPath = new HashMap<>();
 	
@@ -23,7 +24,8 @@ public class CrawlerManager {
 		this.baseDir = baseDir;
 		this.fileManager = new FileManager(baseDir);
 		this.downloader = new Downloader(baseDir);
-		this.htmlParser = new HtmlParser(fileManager, downloader);		
+		this.pathRegistry = new PathRegistry();
+		this.htmlParser = new HtmlParser(fileManager, downloader, pathRegistry);		
 	}
 	
 	public void start(String startUrl, String baseDir, int maxDepth) {
@@ -39,7 +41,8 @@ public class CrawlerManager {
 		
 		try {
 			String path = fileManager.saveHtml();
-			urlToLocalPath.put(url, path);
+			//urlToLocalPath.put(url, path);
+			pathRegistry.register(url, path);
 			Document doc = Jsoup.connect(url).get();
 			
 			List<Elements> resourceUrls = htmlParser.makeLinks(doc);
@@ -50,12 +53,13 @@ public class CrawlerManager {
 				crawl(nextUrl, baseDir, depth+1, maxDepth);
 			}
 			
-			htmlParser.rewriteLinks(links, urlToLocalPath);
+			htmlParser.rewriteLinks(links);
 			htmlParser.rewriteToLocalPaths(resourceUrls);
 			downloader.downloadHtml(baseDir + path, doc);
 			
 		} catch(IOException e) {
-			urlToLocalPath.remove(url);
+			//urlToLocalPath.remove(url);
+			pathRegistry.unregister(url);
 			e.printStackTrace();	
 		}
 		return;
