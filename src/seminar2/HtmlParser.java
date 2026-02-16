@@ -2,7 +2,6 @@ package seminar2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,9 +10,11 @@ import org.jsoup.select.Elements;
 public class HtmlParser {
 	private FileManager fileManager;
 	private Downloader downloader;
-	public HtmlParser(FileManager fileManager, Downloader downloader) {
+	private PathRegistry pathRegistry;
+	public HtmlParser(FileManager fileManager, Downloader downloader, PathRegistry pathRegistry) {
 		this.downloader = downloader;
 		this.fileManager = fileManager;
+		this.pathRegistry = pathRegistry;
 	}
 	
 	public List<Elements> makeLinks(Document doc) {
@@ -50,45 +51,67 @@ public class HtmlParser {
 		rewriteScriptsPaths(jsFiles);
 		
 	}
+	
 	private void rewriteImagePaths(Elements images) {
 		for (Element img : images) {
 			String imgUrl = img.absUrl("src");
-			String path = fileManager.saveImage();
-			String htmlPath = downloader.downloadImage(imgUrl, path);
+			String htmlPath;
+			if (pathRegistry.isRegistered(imgUrl) ) {
+				htmlPath = pathRegistry.getPath(imgUrl);
+			}
+			else {
+				String path = fileManager.saveImage();
+				htmlPath = downloader.downloadImage(imgUrl, path);
+				pathRegistry.register(imgUrl, htmlPath);
+			}
 			img.attr("src", htmlPath);
 			img.removeAttr("srcset");
 		}
 		return;
 	}
+	
 	private void rewriteCssFilesPaths(Elements cssFiles) {
 		for (Element css : cssFiles) {
 			String cssUrl = css.attr("abs:href");
-			String path = fileManager.saveCss();
-			downloader.downloadFile(cssUrl, fileManager.baseDir + path);
+			String path;
+			if (pathRegistry.isRegistered(cssUrl)) {
+				path = pathRegistry.getPath(cssUrl);
+			}
+			else {
+				path = fileManager.saveCss();
+				downloader.downloadFile(cssUrl, fileManager.baseDir+path);
+				pathRegistry.register(cssUrl, path);
+			}
 			css.attr("href", path);
 		}
 		return;
 	}
+	
 	//jsに時間があったら統一!!
 	private void rewriteScriptsPaths(Elements scripts) {
 		for (Element script : scripts) {
 			String jsUrl = script.attr("abs:src");
-			String path = fileManager.saveJs();
-			downloader.downloadFile(jsUrl, fileManager.baseDir + path);
+			String path;
+			if (pathRegistry.isRegistered(jsUrl)) {
+				path = pathRegistry.getPath(jsUrl);
+			}
+			else {
+				path = fileManager.saveJs();
+				downloader.downloadFile(jsUrl, fileManager.baseDir+path);
+				pathRegistry.register(jsUrl, path);
+			}
 			script.attr("src", path);
 		}
 		return;
 	}
-	public void rewriteLinks(Elements links, Map<String, String> urlToLocalPath) {
+	
+	public void rewriteLinks(Elements links) {
 		for (Element link : links) {
 			String originalUrl = link.absUrl("href");
             
-            if (urlToLocalPath.containsKey(originalUrl)) {
-                String localPath = urlToLocalPath.get(originalUrl);
-                link.attr("href", localPath);
-            }
-            else {
-            	
+            if (pathRegistry.isRegistered(originalUrl)) {
+                String path = pathRegistry.getPath(originalUrl);
+                link.attr("href",path);
             }
 		}
 	}
