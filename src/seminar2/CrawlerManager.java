@@ -1,7 +1,6 @@
 package seminar2;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.jsoup.select.Elements;
 
 
 public class CrawlerManager {
-	List<List<Elements>> elementsList = new ArrayList<>();
 	String baseDir;
 	private HtmlParser htmlParser;
 	private Downloader downloader;
@@ -57,6 +55,7 @@ public class CrawlerManager {
 			downloader.downloadHtml(baseDir + path, doc);
 			
 		} catch(IOException e) {
+			urlToLocalPath.remove(url);
 			e.printStackTrace();	
 		}
 		return;

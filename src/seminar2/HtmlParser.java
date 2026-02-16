@@ -11,7 +11,6 @@ import org.jsoup.select.Elements;
 public class HtmlParser {
 	private FileManager fileManager;
 	private Downloader downloader;
-	String baseDir = "wiki/";
 	public HtmlParser(FileManager fileManager, Downloader downloader) {
 		this.downloader = downloader;
 		this.fileManager = fileManager;
@@ -84,14 +83,12 @@ public class HtmlParser {
 		for (Element link : links) {
 			String originalUrl = link.absUrl("href");
             
-            // もしマップに登録されているURLなら（＝ダウンロード済みなら）
             if (urlToLocalPath.containsKey(originalUrl)) {
                 String localPath = urlToLocalPath.get(originalUrl);
-                // "html/1.html" からファイル名 "1.html" だけを取り出してリンク先に設定
                 link.attr("href", localPath);
-            } else {
-                // ダウンロードされなかったリンク（外部サイトや深さ制限外）
-                // 必要に応じて "#" にするなど
+            }
+            else {
+            	
             }
 		}
 	}
