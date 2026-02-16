@@ -62,6 +62,7 @@ public class Downloader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(path + "をダウンロードしました．")
 	}
 	
 	private void download(HttpURLConnection connection, String path) {
