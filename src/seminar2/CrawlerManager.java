@@ -1,9 +1,7 @@
 package seminar2;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,8 +16,6 @@ public class CrawlerManager {
 	private FileManager fileManager;
 	private PathRegistry pathRegistry;
 	
-	private Map<String, String> urlToLocalPath = new HashMap<>();
-	
 	public CrawlerManager(String baseDir) {
 		this.baseDir = baseDir;
 		this.fileManager = new FileManager(baseDir);
@@ -33,7 +29,7 @@ public class CrawlerManager {
 	}
 	
 	private void crawl(String url, String baseDir, int depth, int maxDepth) {
-		if (urlToLocalPath.containsKey(url)) {
+		if (pathRegistry.isRegistered(url)) {
 			return;
 		}
 		
